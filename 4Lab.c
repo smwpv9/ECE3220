@@ -11,13 +11,15 @@
 
 //Includes & defines
 #include <stdio.h>
+#include <stdlib.h>
 
 //prototypes
 void manual( void );
-double* open( int num);
-void offset( double* data, double off, int num );
-void scale( double* data, double scale, int num );
-void copy( double* data, char* name );
+int* open( int num);
+void offset( int* data, double off, int num );
+void scale( int* data, double scale, int num );
+void copy( int* data, char* name );
+void print( int* data );
 
 
 int main( int argc, char** argv )
@@ -25,82 +27,86 @@ int main( int argc, char** argv )
 	if( argc == 1 )
 	{
 		manual( );
+		return 2;
 	}
-	else
-	{
-		double scale = 0;
-		double* offset = NULL;
-		int data = -1;
-		char* name = NULL;
-		short count = 1;
+	
+	double scale = 0;
+	double* offset = NULL;
+	int dataFile = -1;
+	char* name = NULL;
+	short count = 1;
 
-		while( count < argc )
+	while( count < argc )
+	{
+		if( argv[ count ][ 0 ] == '-' )
 		{
-			if( argv[ count ][ 0 ] == '-' )
+			if( argv[ count ][ 2 ] == '\0' )
 			{
-				if( argv[ count ][ 2 ] == '\0' )
+				switch( argv[ count ][ 1 ] )
 				{
-					switch( argv[ count ][ 1 ] )
+				case 'n': {
+					count++;
+					dataFile = (int) atoi( argv[ count ] );
+					if( dataFile <= 0 || 99 < dataFile )
 					{
-					case 'n':
-						count++;
-						data = (int) atoi( argv[ count ] );
-						if( data <= 0 || 99 < data )
-						{
-							printf( "Improper usage. Value for -n is not in [1,99]\n" );
-							return 3;
-						} // else it is proper input.
-						break;
-					case 'o':
-						count++;
-						char* end;
-						offset = (double*) malloc( sizeof( double ) );
-						*offset = strtod( argv[ count ], &end );
-						if( end != NULL )
-						{
-							printf( "Improper usage. Value for -o requires a double with nothing after it\n" );
-							free( end );
-							free( offset );
-							return 3;
-						}// else it is proper input.
-						break;
-					case 's':
-						count++;
-						char* end;
-						scale = strtod( argv[ count ], &end );
-						if( end != NULL || scale == 0 )
-						{
-							printf( "Improper usage. Value for -s requires a double that is not zero with nothing after it\n" );
-							return 3;
-						} // else it is proper input.
-						break;
-					case 'r':
-						count++;
-						name = argv[ count ];
-						break;
-					case 'h':
-						manual( );
-						break;
-					default:
-						printf( "Improper usage. No options match %s\n./a.exe <option> <value>\n-h for manual", argv[ count ] );
-						return 2;
-						break;
-					}
-				}
-				else
-				{
-					printf( "Improper usage. No options match %s\n./a.exe <option> <value>\n-h for manual",argv[count] );
+						printf( "Improper usage. Value for -n is not in [1,99]\n" );
+						return 3;
+					} // else it is proper input.
+					break; }
+				case 'o': {
+					count++;
+					char* end;
+					offset = (double*) malloc( sizeof( double ) );
+					*offset = strtod( argv[ count ], &end );
+					if( end != NULL )
+					{
+						printf( "Improper usage. Value for -o requires a double with nothing after it\n" );
+						free( end );
+						free( offset );
+						return 3;
+					}// else it is proper input.
+					break; }
+				case 's': {
+					count++;
+					char* end;
+					scale = strtod( argv[ count ], &end );
+					if( end != NULL || scale == 0 )
+					{
+						printf( "Improper usage. Value for -s requires a double that is not zero with nothing after it\n" );
+						return 3;
+					} // else it is proper input.
+					break; }
+				case 'r': {
+					count++;
+					name = argv[ count ];
+					break; }
+				case 'h': {
+					manual( );
+					break; }
+				default: {
+					printf( "Improper usage. No options match %s\n./a.exe <option> <value>\n-h for manual", argv[ count ] );
 					return 2;
+					break; }
 				}
 			}
 			else
 			{
-				printf( "Improper usage\n./a.exe -<option> <value>\n-h for manual\n" );
-				return 1;
+				printf( "Improper usage. No options match %s\n./a.exe <option> <value>\n-h for manual",argv[count] );
+				return 2;
 			}
-			count++;
 		}
+		else
+		{
+			printf( "Improper usage\n./a.exe -<option> <value>\n-h for manual\n" );
+			return 1;
+		}
+		count++;
 	}
+
+
+	int* data = open( dataFile );
+	print( data );
+	
 	return 0;
 }
 
@@ -115,23 +121,61 @@ void manual( void )
 	printf( "\t-h\tnone\tDisplays this manual\n\n" );
 	return;
 }
-double* open( int num )
+int* open( int num )
 {
-	char* name 
-}
-void offset( double* data, double off, int num )
-{
-	return;
-}
-void scale( double* data, double scale, int num )
-{
-	return;
-}
-void copy( double* data, char* name )
-{
-	return;
-}
+	char* fileName = (char*)malloc(15 * sizeof(char));
+	if( sprintf( fileName, "Raw_data_%02d.txt", num ) != 15 )
+	{
+		free( fileName );
+		return NULL;
+	}
+	FILE* in = fopen( fileName, "r" );
+	if( in == NULL )
+	{
+		free( fileName );
+		return NULL;
+	}
+	int size = -1;
+	fscanf( in, "%d", &size );
+	if( size < 0 )
+	{
+		free( fileName );
+		return NULL;
+	}
+	int* array = (int*) malloc( ( size + 2 ) * sizeof( int ) );
+	array[ 0 ] = size;
 
+	short i;
+	for( i = 1; i < size+2; i++ )
+	{
+		fscanf( in, "%d", ( array + i ) );
+	}
+	
+	fclose( in );
+	free( fileName );
+	return array;
+}
+void offset( int* data, double off, int num )
+{
+	return;
+}
+void scale( int* data, double scale, int num )
+{
+	return;
+}
+void copy( int* data, char* name )
+{
+	return;
+}
+void print( int* data )
+{
+	short i;
+	for( i = 0; i < data[ 0 ]; i++ )
+	{
+		printf( "%d\n", data[ i + 2 ] );
+	}
+	return;
+}
 /*NOTES
 	for # input check ## or 0# or # itself
 	-n is file name
