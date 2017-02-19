@@ -18,7 +18,7 @@ void manual( void );
 int* open( int num);
 void offset( int* data, double off, int num );
 void scale( int* data, double scale, int num );
-void copy( int* data, char* name );
+short copy( int* data, char* name );
 void print( int* data );
 
 
@@ -157,15 +157,73 @@ int* open( int num )
 }
 void offset( int* data, double off, int num )
 {
+	char* fileName = (char*) malloc( 18 * sizeof( char ) );
+	if( sprintf( fileName, "Offset_data_%02d.txt", num ) != 18 )
+	{
+		free( fileName );
+		return;
+	}
+	FILE* out = fopen( fileName, "w" );
+	if( out == NULL )
+	{
+		free( fileName );
+		return;
+	}
+	fprintf( out, "%d %.4f\n", *data, ( double ) *( data + 1 ) + off );
+	
+	short i;
+	for( i = 2; i < *data + 2; i++ )
+	{
+		fprintf( out, "%.4f\n", (double) *( data + i ) +off );
+	}
+
+	fclose( out );
+	free( fileName );
 	return;
 }
 void scale( int* data, double scale, int num )
 {
+	char* fileName = (char*) malloc( 18 * sizeof( char ) );
+	if( sprintf( fileName, "Scaled_data_%02d.txt", num ) != 18 )
+	{
+		free( fileName );
+		return;
+	}
+	FILE* out = fopen( fileName, "w" );
+	if( out == NULL )
+	{
+		free( fileName );
+		return;
+	}
+	fprintf( out, "%d %.4f\n", *data, ( double ) *( data + 1 ) * scale );
+
+	short i;
+	for( i = 2; i < *data + 2; i++ )
+	{
+		fprintf( out, "%.4f\n", ( double ) *( data + i ) * scale );
+	}
+
+	fclose( out );
+	free( fileName );
 	return;
 }
-void copy( int* data, char* name )
+short copy( int* data, char* name )
 {
-	return;
+	FILE* out = fopen( name, "w" );
+	if( out == NULL )
+	{
+		return 1;
+	}
+	fprintf( out, "%d %d\n", *data, *( data + 1 )  );
+
+	short i;
+	for( i = 2; i < *data + 2; i++ )
+	{
+		fprintf( out, "%d\n", *( data + i ) );
+	}
+
+	fclose( out );
+	return 0;
 }
 void print( int* data )
 {
