@@ -45,7 +45,13 @@ int main( int argc, char** argv )
 				switch( argv[ count ][ 1 ] )
 				{
 				case 'n': {
+					printf( "n found\n" );
 					count++;
+					if( count >= argc )
+					{
+						printf( "Improper usage. -n needs a value in [1,99]\n" );
+						return 3;
+					}
 					dataFile = (int) atoi( argv[ count ] );
 					if( dataFile <= 0 || 99 < dataFile )
 					{
@@ -54,11 +60,17 @@ int main( int argc, char** argv )
 					} // else it is proper input.
 					break; }
 				case 'o': {
+					printf( "o found\n" );
 					count++;
+					if( count >= argc )
+					{
+						printf( "Improper usage. Value for -o requires a double with nothing after it\n" );
+						return 3;
+					}
 					char* end;
 					offset = (double*) malloc( sizeof( double ) );
 					*offset = strtod( argv[ count ], &end );
-					if( end != NULL )
+					if( *end != '\0' )
 					{
 						printf( "Improper usage. Value for -o requires a double with nothing after it\n" );
 						free( end );
@@ -67,21 +79,30 @@ int main( int argc, char** argv )
 					}// else it is proper input.
 					break; }
 				case 's': {
+					printf( "s found\n" );
 					count++;
-					char* end;
-					scale = strtod( argv[ count ], &end );
-					if( end != NULL || scale == 0 )
+					if( count >= argc )
 					{
 						printf( "Improper usage. Value for -s requires a double that is not zero with nothing after it\n" );
+						return 3;
+					}
+					char* end = NULL;
+					scale = strtod( argv[ count ], &end );
+					if( *(end) != '\0' || scale == 0 )
+					{
+						printf( "I2mproper usage. Value for -s requires a double that is not zero with nothing after it\n" );
 						return 3;
 					} // else it is proper input.
 					break; }
 				case 'r': {
+					printf( "r found\n" );
 					count++;
 					name = argv[ count ];
 					break; }
 				case 'h': {
+					printf( "h found\n" );
 					manual( );
+					return 0;
 					break; }
 				default: {
 					printf( "Improper usage. No options match %s\n./a.exe <option> <value>\n-h for manual", argv[ count ] );
@@ -105,6 +126,11 @@ int main( int argc, char** argv )
 
 
 	int* data = open( dataFile );
+	if( data == NULL )
+	{
+		printf( "No data\n" );
+		return 4;
+	}
 	print( data );
 	
 	return 0;
@@ -227,6 +253,8 @@ short copy( int* data, char* name )
 }
 void print( int* data )
 {
+	if( data == NULL )
+		return;
 	short i;
 	for( i = 0; i < data[ 0 ]; i++ )
 	{
