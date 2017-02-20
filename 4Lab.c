@@ -7,7 +7,10 @@
 	0 - success
 	1 - value before option argument
 	2 - no option matches argument
-	3 - improper value for option*/
+	3 - improper value for option
+	4 - no data file of that name
+	5 - incorrect file name for -r
+	*/
 
 //Includes & defines
 #include <stdio.h>
@@ -30,8 +33,8 @@ int main( int argc, char** argv )
 		return 2;
 	}
 	
-	double scale = 0;
-	double* offset = NULL;
+	double scaleNum = 0;
+	double* offsetNum = NULL;
 	int dataFile = -1;
 	char* name = NULL;
 	short count = 1;
@@ -45,7 +48,6 @@ int main( int argc, char** argv )
 				switch( argv[ count ][ 1 ] )
 				{
 				case 'n': {
-					printf( "n found\n" );
 					count++;
 					if( count >= argc )
 					{
@@ -60,7 +62,6 @@ int main( int argc, char** argv )
 					} // else it is proper input.
 					break; }
 				case 'o': {
-					printf( "o found\n" );
 					count++;
 					if( count >= argc )
 					{
@@ -68,18 +69,17 @@ int main( int argc, char** argv )
 						return 3;
 					}
 					char* end;
-					offset = (double*) malloc( sizeof( double ) );
-					*offset = strtod( argv[ count ], &end );
+					offsetNum = (double*) malloc( sizeof( double ) );
+					*offsetNum = strtod( argv[ count ], &end );
 					if( *end != '\0' )
 					{
 						printf( "Improper usage. Value for -o requires a double with nothing after it\n" );
 						free( end );
-						free( offset );
+						free( offsetNum );
 						return 3;
 					}// else it is proper input.
 					break; }
 				case 's': {
-					printf( "s found\n" );
 					count++;
 					if( count >= argc )
 					{
@@ -87,22 +87,24 @@ int main( int argc, char** argv )
 						return 3;
 					}
 					char* end = NULL;
-					scale = strtod( argv[ count ], &end );
-					if( *(end) != '\0' || scale == 0 )
+					scaleNum = strtod( argv[ count ], &end );
+					if( *(end) != '\0' || scaleNum == 0 )
 					{
-						printf( "I2mproper usage. Value for -s requires a double that is not zero with nothing after it\n" );
+						printf( "Improper usage. Value for -s requires a double that is not zero with nothing after it\n" );
 						return 3;
 					} // else it is proper input.
 					break; }
 				case 'r': {
-					printf( "r found\n" );
 					count++;
+					if( count >= argc )
+					{
+						printf( "Improper usage.  Value for -r must be a valid file name.\n" );
+						return 3;
+					}
 					name = argv[ count ];
 					break; }
 				case 'h': {
-					printf( "h found\n" );
 					manual( );
-					return 0;
 					break; }
 				default: {
 					printf( "Improper usage. No options match %s\n./a.exe <option> <value>\n-h for manual", argv[ count ] );
@@ -128,10 +130,29 @@ int main( int argc, char** argv )
 	int* data = open( dataFile );
 	if( data == NULL )
 	{
-		printf( "No data\n" );
+		printf( "Data file not found\n");
 		return 4;
 	}
-	print( data );
+
+	if( offsetNum != NULL )
+	{
+		offset( data, *offsetNum, dataFile );
+		free( offsetNum );
+	}
+	if( scaleNum != 0 )
+	{
+		scale( data, scaleNum, dataFile );
+	}
+	if( name != NULL )
+	{
+		if( copy( data, name ) != 0 )
+		{
+			printf( "Filename for -r is not allowed\n" );
+			return 5;
+		}
+	}
+
+	free( data );
 	
 	return 0;
 }
@@ -140,11 +161,11 @@ void manual( void )
 {
 	printf( "Format for usage: ./a.exe <option> <value>\n" );
 	printf( "\tOptions. \tValue Type\tFunction\n" );
-	printf( "\t-n\tInt [1,99]\tRepresents the file num of raw data\n" );
-	printf( "\t-o\tDouble\tOffset raw data and place into a new file\n" );
-	printf( "\t-s\tDouble != 0\tScale raw data and place into a new file\n" );
-	printf( "\t-r\tString\tCopies raw data to new file with name of <value>\n" );
-	printf( "\t-h\tnone\tDisplays this manual\n\n" );
+	printf( "\t-n\t\tInt [1,99]\tRepresents the file num of raw data\n" );
+	printf( "\t-o\t\tDouble\t\tOffset raw data and place into a new file\n" );
+	printf( "\t-s\t\tDouble != 0\tScale raw data and place into a new file\n" );
+	printf( "\t-r\t\tString\t\tCopies raw data to new file with name of <value>\n" );
+	printf( "\t-h\t\tnone\t\tDisplays this manual\n\n" );
 	return;
 }
 int* open( int num )
@@ -251,17 +272,7 @@ short copy( int* data, char* name )
 	fclose( out );
 	return 0;
 }
-void print( int* data )
-{
-	if( data == NULL )
-		return;
-	short i;
-	for( i = 0; i < data[ 0 ]; i++ )
-	{
-		printf( "%d\n", data[ i + 2 ] );
-	}
-	return;
-}
+
 /*NOTES
 	for # input check ## or 0# or # itself
 	-n is file name
