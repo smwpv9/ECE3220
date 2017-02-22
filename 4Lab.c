@@ -373,7 +373,7 @@ void normal( int* data, int num )
 		free( fileName );
 		return;
 	}
-	double scale = 1 / *( data + 1 );
+	double scale = 1 / (double)*( data + 1 );
 	fprintf( out, "%d %.4f\n", *data, ( double ) *( data + 1 ) * scale );
 
 	short i;
