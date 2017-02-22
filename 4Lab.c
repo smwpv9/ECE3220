@@ -22,7 +22,11 @@ int* open( int num);
 void offset( int* data, double off, int num );
 void scale( int* data, double scale, int num );
 short copy( int* data, char* name );
-void print( int* data );
+double average( int* data );
+int maximum( int* data );
+void statistics( int* data, int num );
+void center( int* data, int num );
+void normal( int* data, int num );
 
 
 int main( int argc, char** argv )
@@ -38,6 +42,10 @@ int main( int argc, char** argv )
 	int dataFile = -1;
 	char* name = NULL;
 	short count = 1;
+
+	short stats = 0;
+	short cent = 0;
+	short norm = 0;
 
 	while( count < argc )
 	{
@@ -106,6 +114,15 @@ int main( int argc, char** argv )
 				case 'h': {
 					manual( );
 					break; }
+				case 'S': {
+					stats = 1;
+					break; }
+				case 'C': {
+					cent = 1;
+					break; }
+				case 'N': {
+					norm = 1;
+					break; }				
 				default: {
 					printf( "Improper usage. No options match %s\n./a.exe <option> <value>\n-h for manual", argv[ count ] );
 					return 2;
@@ -151,6 +168,12 @@ int main( int argc, char** argv )
 			return 5;
 		}
 	}
+	if( stats == 1 )
+		statistics( data, dataFile );
+	if( cent == 1 )
+		center( data, dataFile );
+	if( norm == 1 )
+		normal( data, dataFile );
 
 	free( data );
 	
@@ -161,7 +184,7 @@ void manual( void )
 {
 	printf( "Format for usage: ./a.exe <option> <value>\n" );
 	printf( "\tOptions. \tValue Type\tFunction\n" );
-	printf( "\t-n\t\tInt [1,99]\tRepresents the file num of raw data\n" );
+	printf( "\t-n\t\tInt [1,99]\tRepresents the file num of raw data. This will truncate\n" );
 	printf( "\t-o\t\tDouble\t\tOffset raw data and place into a new file\n" );
 	printf( "\t-s\t\tDouble != 0\tScale raw data and place into a new file\n" );
 	printf( "\t-r\t\tString\t\tCopies raw data to new file with name of <value>\n" );
@@ -272,7 +295,97 @@ short copy( int* data, char* name )
 	fclose( out );
 	return 0;
 }
+double average( int* data )
+{
+	short i = 0;
+	double sum = 0;
+	for( i = 0; i < *( data ); i++ )
+		sum += *( data + i + 2 );
+	return sum / *( data );
+}
+int maximum( int* data )
+{
+	short i = 0;
+	short maxIndex = 0;
+	for( i = 0; i < *( data ); i++ )
+		if( *( data + 2 + maxIndex ) < *( data + 2 + i ) )
+			maxIndex = i;
+	return *( data + 2 + maxIndex );
+}
+void statistics( int* data, int num )
+{
+	char* fileName = (char*) malloc( 22 * sizeof( char ) );
+	if( sprintf( fileName, "Statistics_data_%02d.txt", num ) != 22 )
+	{
+		free( fileName );
+		return;
+	}
+	FILE* out = fopen( fileName, "w" );
+	if( out == NULL )
+	{
+		free( fileName );
+		return;
+	}
+	fprintf( out, "%.4f %d\n", average(data),maximum(data) );
+	
+	fclose( out );
+	free( fileName );
+	return;
+}
+void center( int* data, int num )
+{
+	char* fileName = (char*) malloc( 20 * sizeof( char ) );
+	if( sprintf( fileName, "Centered_data_%02d.txt", num ) != 20 )
+	{
+		free( fileName );
+		return;
+	}
+	FILE* out = fopen( fileName, "w" );
+	if( out == NULL )
+	{
+		free( fileName );
+		return;
+	}
+	double off = -1 * average( data );
+	fprintf( out, "%d %.4f\n", *data, ( double ) *( data + 1 ) + off );
 
+	short i;
+	for( i = 2; i < *data + 2; i++ )
+	{
+		fprintf( out, "%.4f\n", ( double ) *( data + i ) + off );
+	}
+
+	fclose( out );
+	free( fileName );
+	return;
+}
+void normal( int* data, int num )
+{
+	char* fileName = (char*) malloc( 22 * sizeof( char ) );
+	if( sprintf( fileName, "Normalized_data_%02d.txt", num ) != 22 )
+	{
+		free( fileName );
+		return;
+	}
+	FILE* out = fopen( fileName, "w" );
+	if( out == NULL )
+	{
+		free( fileName );
+		return;
+	}
+	double scale = 1 / *( data + 1 );
+	fprintf( out, "%d %.4f\n", *data, ( double ) *( data + 1 ) * scale );
+
+	short i;
+	for( i = 2; i < *data + 2; i++ )
+	{
+		fprintf( out, "%.4f\n", ( double ) *( data + i ) * scale );
+	}
+
+	fclose( out );
+	free( fileName );
+	return;
+}
 /*NOTES
 	for # input check ## or 0# or # itself
 	-n is file name
