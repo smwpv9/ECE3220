@@ -37,41 +37,42 @@ int main( int argc, char** argv )
 		return 2;
 	}
 	
+	//part one variables
 	double scaleNum = 0;
 	double* offsetNum = NULL;
 	int dataFile = -1;
-	char* name = NULL;
-	short count = 1;
-
+	char* name = NULL; // for the -r option
+	short count = 1; //skip over the first argument
+	//part two variables
 	short stats = 0;
 	short cent = 0;
 	short norm = 0;
 
 	while( count < argc )
 	{
-		if( argv[ count ][ 0 ] == '-' )
+		if( argv[ count ][ 0 ] == '-' )//is the beginning a dash
 		{
-			if( argv[ count ][ 2 ] == '\0' )
+			if( argv[ count ][ 2 ] == '\0' )// is the arg only 2 characters
 			{
 				switch( argv[ count ][ 1 ] )
 				{
-				case 'n': {
+				case 'n': { // set the dataFile to the value indicating the option was selected.
 					count++;
-					if( count >= argc )
+					if( count >= argc ) // there is no value after the option.
 					{
 						printf( "Improper usage. -n needs a value in [1,99]\n" );
 						return 3;
 					}
 					dataFile = (int) atoi( argv[ count ] );
-					if( dataFile <= 0 || 99 < dataFile )
+					if( dataFile <= 0 || 99 < dataFile ) // the value is improper for this option
 					{
 						printf( "Improper usage. Value for -n is not in [1,99]\n" );
 						return 3;
 					} // else it is proper input.
 					break; }
-				case 'o': {
+				case 'o': { // set the offset num to a double
 					count++;
-					if( count >= argc )
+					if( count >= argc ) // there is no value for this option
 					{
 						printf( "Improper usage. Value for -o requires a double with nothing after it\n" );
 						return 3;
@@ -79,7 +80,7 @@ int main( int argc, char** argv )
 					char* end;
 					offsetNum = (double*) malloc( sizeof( double ) );
 					*offsetNum = strtod( argv[ count ], &end );
-					if( *end != '\0' )
+					if( *end != '\0' ) // the value is improper for this option
 					{
 						printf( "Improper usage. Value for -o requires a double with nothing after it\n" );
 						free( end );
@@ -87,80 +88,80 @@ int main( int argc, char** argv )
 						return 3;
 					}// else it is proper input.
 					break; }
-				case 's': {
+				case 's': { // set scaleNum as the value given indicating it has been asked for
 					count++;
-					if( count >= argc )
+					if( count >= argc ) // there is no value.
 					{
 						printf( "Improper usage. Value for -s requires a double that is not zero with nothing after it\n" );
 						return 3;
 					}
 					char* end = NULL;
 					scaleNum = strtod( argv[ count ], &end );
-					if( *(end) != '\0' || scaleNum == 0 )
+					if( *(end) != '\0' || scaleNum == 0 ) // the value is improper for this selection
 					{
 						printf( "Improper usage. Value for -s requires a double that is not zero with nothing after it\n" );
 						return 3;
 					} // else it is proper input.
 					break; }
-				case 'r': {
+				case 'r': { //get the new name and store it in the name indicating that the option has been asked for
 					count++;
-					if( count >= argc )
+					if( count >= argc ) // there is not value for the option.
 					{
 						printf( "Improper usage.  Value for -r must be a valid file name.\n" );
 						return 3;
 					}
 					name = argv[ count ];
 					break; }
-				case 'h': {
+				case 'h': { //display the manual.
 					manual( );
 					break; }
-				case 'S': {
+				case 'S': {//indicate that the statistics have been asked for
 					stats = 1;
 					break; }
-				case 'C': {
+				case 'C': {//indicate that center has been asked for
 					cent = 1;
 					break; }
-				case 'N': {
+				case 'N': { //indicate that normalize has been asked for
 					norm = 1;
 					break; }				
-				default: {
+				default: { //display error for no options match
 					printf( "Improper usage. No options match %s\n./a.exe <option> <value>\n-h for manual", argv[ count ] );
 					return 2;
 					break; }
-				}
-			}
+				}// end switch
+			}// end null terminator if
 			else
 			{
 				printf( "Improper usage. No options match %s\n./a.exe <option> <value>\n-h for manual",argv[count] );
 				return 2;
-			}
-		}
+			}// end null terminator else
+		}// end dash if
 		else
 		{
 			printf( "Improper usage\n./a.exe -<option> <value>\n-h for manual\n" );
 			return 1;
-		}
+		}//end dash or
 		count++;
-	}
+	}// end argument while loop
 
 
-	int* data = open( dataFile );
-	if( data == NULL )
+	int* data = open( dataFile ); // read in the file
+	if( data == NULL ) //check if the file was not found or data was not present.
 	{
 		printf( "Data file not found\n");
 		return 4;
 	}
 
-	if( offsetNum != NULL )
+	if( offsetNum != NULL ) // call offset with the offset
 	{
 		offset( data, *offsetNum, dataFile );
 		free( offsetNum );
 	}
-	if( scaleNum != 0 )
+	if( scaleNum != 0 ) // call scale with the scaler
 	{
 		scale( data, scaleNum, dataFile );
 	}
-	if( name != NULL )
+	if( name != NULL ) // call copy with the name to rename the data with
 	{
 		if( copy( data, name ) != 0 )
 		{
@@ -168,11 +169,11 @@ int main( int argc, char** argv )
 			return 5;
 		}
 	}
-	if( stats == 1 )
+	if( stats == 1 ) // call statistics
 		statistics( data, dataFile );
-	if( cent == 1 )
+	if( cent == 1 ) // call center
 		center( data, dataFile );
-	if( norm == 1 )
+	if( norm == 1 ) // call normalize
 		normal( data, dataFile );
 
 	free( data );
@@ -180,6 +181,7 @@ int main( int argc, char** argv )
 	return 0;
 }
 
+/*Prints the manual for this program*/
 void manual( void )
 {
 	printf( "Format for usage: ./a.exe <option> <value>\n" );
@@ -191,6 +193,8 @@ void manual( void )
 	printf( "\t-h\t\tnone\t\tDisplays this manual\n\n" );
 	return;
 }
+/*Reads in the raw data file corrsponding to the number
+	returns null if errored*/
 int* open( int num )
 {
 	char* fileName = (char*)malloc(15 * sizeof(char));
@@ -225,6 +229,7 @@ int* open( int num )
 	free( fileName );
 	return array;
 }
+/*Outputs the offset values into the correct file*/
 void offset( int* data, double off, int num )
 {
 	char* fileName = (char*) malloc( 18 * sizeof( char ) );
@@ -251,6 +256,7 @@ void offset( int* data, double off, int num )
 	free( fileName );
 	return;
 }
+/*Outputs the scaled values into the correct file*/
 void scale( int* data, double scale, int num )
 {
 	char* fileName = (char*) malloc( 18 * sizeof( char ) );
@@ -277,6 +283,7 @@ void scale( int* data, double scale, int num )
 	free( fileName );
 	return;
 }
+/*Outputs the data into the renamed file*/
 short copy( int* data, char* name )
 {
 	FILE* out = fopen( name, "w" );
@@ -295,6 +302,7 @@ short copy( int* data, char* name )
 	fclose( out );
 	return 0;
 }
+/*Calculates the average of the data given*/
 double average( int* data )
 {
 	short i = 0;
@@ -303,6 +311,7 @@ double average( int* data )
 		sum += *( data + i + 2 );
 	return sum / *( data );
 }
+/*Find the maximum value within the data*/
 int maximum( int* data )
 {
 	short i = 0;
@@ -312,6 +321,7 @@ int maximum( int* data )
 			maxIndex = i;
 	return *( data + 2 + maxIndex );
 }
+/*Outputs the average and max into the correct file*/
 void statistics( int* data, int num )
 {
 	char* fileName = (char*) malloc( 22 * sizeof( char ) );
@@ -332,6 +342,7 @@ void statistics( int* data, int num )
 	free( fileName );
 	return;
 }
+/*Outputs the data shifted so the average is zero to a file*/
 void center( int* data, int num )
 {
 	char* fileName = (char*) malloc( 20 * sizeof( char ) );
@@ -359,6 +370,7 @@ void center( int* data, int num )
 	free( fileName );
 	return;
 }
+/*Outputs the data scaled to be within [-1,1]*/
 void normal( int* data, int num )
 {
 	char* fileName = (char*) malloc( 22 * sizeof( char ) );
