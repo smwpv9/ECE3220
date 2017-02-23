@@ -1,10 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
  
 int main()
 {
-    char* fileName;
+    char* fileName = (char*)malloc(20*sizeof(char));
     printf("Specify file name you would like to print to: \n");
-    scanf("%s",&fileName);
+    scanf("%19s", fileName);
  
 
     FILE* file1 = fopen(fileName, "a+");
