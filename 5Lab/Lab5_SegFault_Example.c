@@ -3,7 +3,7 @@
 
 void tester( int* c, int k ) {
 	printf( "x[%d] = %d\n", k, c[ k ] );
-	c[ 999 ] = 1309;
+	c[ 999 ] = 1309;  // Reduced index from 10000 to 999.
 }
 
 int main( int argc, char* argv[ ] ) {
@@ -20,5 +20,5 @@ int main( int argc, char* argv[ ] ) {
 	scanf( "%d", &k );
 
 	tester( x, k );
-	return 0;
+	return 0; // added a return.
 }

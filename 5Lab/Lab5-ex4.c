@@ -10,9 +10,8 @@ int main()
         arr2[ i ] = 'a';
 	++i;
     }
-	arr2[ 0 ] = 'b';
-    strcpy( arr1 , arr2 );
-	arr1[ 14 ] = '\0';
+    strcpy( arr1 , arr2 ); // My system doesn't notice that this is writing into space it shouldn't
+	arr1[ 14 ] = '\0';//strcpy doesn't copy the null terminator over.
     printf("%s",arr1);
 	return 0;
 }

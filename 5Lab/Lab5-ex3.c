@@ -2,7 +2,7 @@
 
 int factorial ( int num )
 {
-	if( num == 0 )
+	if( num == 0 )// added a base case to the recursion.
 		return 1;
     return num * factorial( num - 1 );
 }

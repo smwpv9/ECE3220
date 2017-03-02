@@ -4,8 +4,10 @@
 int main()
 {
     char* fileName = (char*)malloc(20*sizeof(char));
+	//Malloced and limited size of file
     printf("Specify file name you would like to print to: \n");
     scanf("%19s", fileName);
+	//Limited the size of the input.
  
 
     FILE* file1 = fopen(fileName, "a+");
