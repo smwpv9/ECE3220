@@ -61,5 +61,10 @@ int main( )
 	// or define new ones. Try different types.
 	// ***********************************************************************
 
+	vector<int> one( 2 ), two( one ), three{ 4,2,1,0 };
+	vector<double> four( 5, 5.25 );
+	vector<short> five = { 127, 128, 50 };
+	vector<int> six;
+
 	return 0;
 }

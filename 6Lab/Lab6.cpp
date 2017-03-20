@@ -341,6 +341,7 @@ void Signal::offset( double off )
 	{
 		*( data + i ) += off;
 	}
+	statistics( );
 	return;
 }
 void Signal::scale(double scale)
@@ -351,6 +352,7 @@ void Signal::scale(double scale)
 	{
 		*( data + i ) *= scale;
 	}
+	statistics( );
 	return;
 }
 void Signal::statistics( )
