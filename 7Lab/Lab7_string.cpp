@@ -47,21 +47,21 @@ int main( )
 	cin.ignore( );
 	getline( cin, word );
 
-	if( word.size( ) > 5 )
+	if( word.size( ) > 5 )  //size( ) operator.
 		cout << "This is a large word" << endl;
 	else
-		word = name + other;
+		word = name + other;  // + operator
 
-	if( word == s2+" "+s3 )
+	if( word == s2+" "+s3 ) //Equivilance and + operator.
 		cout << "You did not enter Hello World" << endl;
 
-	if( !other.empty( ) && word != other )
+	if( !other.empty( ) && word != other ) // empty() and != operator.
 		cout << name << " is not equal to " << other << endl;
 	else
 		cout << "Other is empty" << endl;
 
 
-	if( name > s3 )
+	if( name > s3 ) // Comparison operator.
 		cout << s3 << " " << name << endl;
 	else
 		cout << name << " " << s3 << endl;

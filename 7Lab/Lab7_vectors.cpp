@@ -62,9 +62,36 @@ int main( )
 	// ***********************************************************************
 
 	vector<int> one( 2 ), two( one ), three{ 4,2,1,0 };
-	vector<double> four( 5, 5.25 );
-	vector<short> five = { 127, 128, 50 };
+	vector<double> four( 4, 5.25 );
+	vector<int> five = { 127, 128, 50 };
 	vector<int> six;
+
+	if( two.empty( ) ) //empty() operator
+		cout << "Nothing in two"<<endl;
+	
+	two.push_back( 4 ); // pushback() operator
+	cout << two[2] << endl;
+	
+	one = { 4,2,1,0 }; //replacement operator.
+
+	if( one != three ) // non equivilance operator.
+		one = three;//replacement with vector operator.
+	else
+		cout << "one equals three" << endl;
+
+	if( one == three ) // equivilance operator.
+		cout << "one equals three" << endl;
+
+	if( three >= five ) // comparison operator.
+		cout << "three over five" << endl;
+	else
+		cout << "five over three" << endl;
+
+	for( int i = 0; i < three.size( ); i++ ) //size() operator.
+		if( three[ i ] == two[ 2 ] )		// [ ] operator
+			cout << two[ 2 ] << " is in vector three" << endl;
+
+	// See problems 3.14 and 3.15 in their own file.
 
 	return 0;
 }

@@ -24,8 +24,10 @@ public:
 
 				// operators as member functions: 'this' is bound to the left hand operand
 	bool operator>( const Lab7 &x ) const;
-	void operator+( const Lab7 &x );
+	Lab7 operator+( const Lab7 &x );
 	void operator*( int factor );
+	void operator*( const Lab7 &x );
+	void operator=( const Lab7 &x );
 	void Printvals( );
 	// constructor(s)
 	// destructor
@@ -40,10 +42,12 @@ bool Lab7::operator>( const Lab7 &x ) const
 		return 0;
 }
 
-void Lab7::operator+( const Lab7 &x )
+Lab7 Lab7::operator+( const Lab7 &x )
 {
-	a[ 0 ] += x.a[ 0 ];
-	a[ 1 ] += x.a[ 1 ];
+	Lab7 temp;
+	temp.a[0] = a[ 0 ] + x.a[ 0 ];
+	temp.a[1] = a[ 1 ] + x.a[ 1 ];
+	return temp;
 }
 
 void Lab7::operator*( int factor )
@@ -57,6 +61,11 @@ void Lab7::Printvals( )
 	cout << "\na[0] = " << a[ 0 ] << ", a[1] = " << a[ 1 ] << endl;
 }
 
+void Lab7::operator=( const Lab7 &x )
+{
+	a[ 0 ] = x.a[ 0 ];
+	a[ 1 ] = x.a[ 1 ];
+}
 // -------- Operators can be Non-member functions -------------------
 Lab7 operator+( const Lab7 &lhs, const Lab7 &rhs )
 {
@@ -101,12 +110,12 @@ int main( )
 	obj1.Printvals( );
 	obj2.Printvals( );
 
-	obj1 + obj2;	// normal expression. Which operator is being called?
+	obj1 = obj1 + obj2;	// normal expression. Which operator is being called?
 					// obj1.operator+(obj2);	// equivalent, try it out
 	obj1.Printvals( );
 	obj2.Printvals( );
 
-	obj2 + obj1;	// normal expression. Which operator is being called?
+	obj2 = obj1;	// normal expression. Which operator is being called?
 					// obj2.operator+(obj1);	// equivalent, try it out
 	obj1.Printvals( );
 	obj2.Printvals( );
