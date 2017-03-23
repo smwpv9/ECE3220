@@ -50,7 +50,7 @@ Signal operator+(  Signal &left,  Signal &right );
 
 int main( int argc, char** argv )
 {
-	Signal* sig;
+	Signal sig;
 
 	//Handle command line arguments
 	switch( argc )
@@ -134,14 +134,14 @@ int main( int argc, char** argv )
 			double off = 0.0;
 			cout << "Please enter the offset: " << endl;
 			cin >> off;
-			sig->operator+(off);
+			sig + (off);
 			}
 			break;
 		case 's': { // scale current data
 			double sc = 0.0;
 			cout << "Please enter the scaler: " << endl;
 			cin >> sc;
-			sig->operator*(sc);
+			sig * (sc);
 			}
 			break;
 		case 'h': //display manual
@@ -178,10 +178,9 @@ int main( int argc, char** argv )
 
 
 	Signal* two = new Signal( "Default.txt" );
-	delete sig;
 	sig = new Signal( 1 );
 
-	Signal three = *sig + *two ;
+	Signal three = sig + *two ;
 
 	three.Sig_info( );
 
@@ -191,7 +190,6 @@ int main( int argc, char** argv )
 
 	// Make sure to free the data pointed to.
 	delete two;
-	delete sig;
 	return 0;
 }
 
