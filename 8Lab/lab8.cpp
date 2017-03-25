@@ -6,6 +6,7 @@
 //Includes
 #include <iostream>
 #include <string>
+#include <stack>
 using namespace std;
 
 //Classes
@@ -29,10 +30,12 @@ public:
 };
 class messageStack {
 private:
+	stack<message*> top;
 public:
-	messageStack( char* m );
-	void push( char* m );
-	message pop( );
+	messageStack( message* m );
+	~messageStack( );
+	void push( message* m );
+	message* pop( );
 	void print_stack( );
 };
 
@@ -43,7 +46,7 @@ public:
 //---------------- Message --------------------------
 message::message( )
 {
-	word = new string( );
+	word = "";
 }
 message::message( string m )
 {
@@ -83,12 +86,12 @@ void morseCodeMessage::translate( )
 		if( '0' <= word.at(i) && word.at(i) <= '}' )
 			morse += code[ word[ i ] - 48 ] + " ";
 		else
-			morse += " ";
+			morse += "\t";
 	return;
 }
 morseCodeMessage::morseCodeMessage(string m) : message(m)
 {
-	morse = new string( "" );
+	morse = "";
 	translate( );
 }
 morseCodeMessage::~morseCodeMessage( )
@@ -99,12 +102,64 @@ void morseCodeMessage::print( )
 	cout << word << endl;
 	cout << morse << endl;
 }
+//----------------- messageStack --------------------
+messageStack::messageStack( message* m )
+{
+	top.push( m );
+}
+messageStack::~messageStack( )
+{
+	while( !top.empty( ) )
+		top.pop( );
+}
+void messageStack::push( message* m )
+{
+	top.push( m );
+}
+message* messageStack::pop( )
+{
+	message* m = top.top( );
+	top.pop( );
+	return m;
+}
+void messageStack::print_stack( )
+{
+	stack<message*> temp;
+	while( !top.empty( ) )
+	{
+		
+		top.top() -> print( );
+		temp.push( top.top( ) );
+		top.pop( );
+	}
+	while( !temp.empty( ) )
+	{
+		top.push( temp.top( ) );
+		temp.pop( );
+	}
+}
 
-//-------------------other  --------------------------------
+//------------------- other  ------------------------
 
 
 //------------------- Main ---------------------------------
 int main( void )
 {
+	message one;
+	message two( "Yay is it coded?" );
+	morseCodeMessage three( "SOS" );
+
+	messageStack list( &one );
+	list.push( &two );
+	list.push( &three );
+	list.push( new message("YYAAYY"));
+
+	list.print_stack( );
+	list.pop( );
+	list.print_stack( );
+
+	cout << "-----------------------------------" << endl;
+	two.print( );
+	three.print( );
 	return 0;
 }

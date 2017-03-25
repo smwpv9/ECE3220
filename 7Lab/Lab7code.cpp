@@ -50,7 +50,7 @@ Signal operator+(  Signal &left,  Signal &right );
 
 int main( int argc, char** argv )
 {
-	Signal sig;
+	Signal* sig;
 
 	//Handle command line arguments
 	switch( argc )
@@ -134,14 +134,14 @@ int main( int argc, char** argv )
 			double off = 0.0;
 			cout << "Please enter the offset: " << endl;
 			cin >> off;
-			sig + (off);
+			*sig + (off);
 			}
 			break;
 		case 's': { // scale current data
 			double sc = 0.0;
 			cout << "Please enter the scaler: " << endl;
 			cin >> sc;
-			sig * (sc);
+			*sig * (sc);
 			}
 			break;
 		case 'h': //display manual
@@ -180,7 +180,7 @@ int main( int argc, char** argv )
 	Signal* two = new Signal( "Default.txt" );
 	sig = new Signal( 1 );
 
-	Signal three = sig + *two ;
+	Signal three = *sig + *two ;
 
 	three.Sig_info( );
 
@@ -280,7 +280,7 @@ Signal::Signal( int fileNum )
 Signal::Signal( string fileName )
 {
 	fstream in;
-	in.open( fileName, ios::in ); // try to open the file
+	in.open(fileName.c_str(), ios::in ); // try to open the file
 	if( in.is_open( ) )// check if the file is open
 	{
 		//if yes the load in starting values
@@ -394,7 +394,7 @@ void Signal::Save_file( string fileName )
 {
 	//Open the file 'out'
 	fstream out;
-	out.open( fileName, ios::out );
+	out.open( fileName.c_str(), ios::out );
 
 	//write all the data to 'out'
 	out << length << " " << max_value << endl;
