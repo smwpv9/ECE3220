@@ -20,7 +20,7 @@ public:
 	void move( double dx, double dy );
 	virtual double area( ) = 0;
 	virtual void resize( double a, double b ) throw( string ) = 0;
-	virtual void display( );
+	virtual void display( ) = 0;
 	ConicSections( double x0 = 0.0, double y0 = 0.0 );
 	~ConicSections( );
 };
@@ -32,6 +32,7 @@ public:
 	int withIn( double px, double py );
 	double area( );
 	void resize( double a, double b) throw(string);
+	void display( );
 	Circle( );
 	Circle( double r );
 	Circle( double x0, double y0 );
@@ -62,13 +63,6 @@ void ConicSections::move( double dx, double dy )
 	x += dx;
 	y += dy;
 	return;
-}
-
-void ConicSections::display( )
-{
-	cout << "Location ( " << x << ", " << y << ")" << endl;
-	cout << "Radius: " << majorRadius << endl;
-	cout << "Area: " << area( ) << endl;
 }
 
 ConicSections::ConicSections( double x0, double y0 )
@@ -103,6 +97,12 @@ void Circle::resize( double a, double b ) throw( string )
 	if( a <= 0 )
 		throw "Radius cannot be zero or less.";
 	majorRadius *= a;
+}
+void Circle::display( )
+{
+	cout << "Location ( " << x << ", " << y << ")" << endl;
+	cout << "Radius: " << majorRadius << endl;
+	cout << "Area: " << area( ) << endl;
 }
 Circle::Circle( ) : ConicSections( 0, 0 )
 {
@@ -191,15 +191,6 @@ Ellipse::~Ellipse( )
 //================================== Main ======================================
 int main( void )
 {
-	Ellipse one( 0, 0 );
-	one.rotate( 3* 3.14159/4 );
-	double* vertices = one.calcVertices( );
-
-	int i;
-	for( i = 0; i < 8; i++ )
-	{
-		cout << vertices[ i ] << endl;
-	}
-	delete vertices;
+	
 	return 0;
 }

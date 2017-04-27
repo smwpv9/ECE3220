@@ -160,11 +160,10 @@ int main( int argc, char** argv )
 			sig->Sig_info( );
 			break;
 		case 'q': { // save under a file name
-			char* name = new char[ 20 ];
+			string name;
 			cout << "Please enter the name: " << endl;
 			cin >> name;
 			sig->Save_file( name );
-			delete name;
 			}
 			break;
 		case 'e': // exit
@@ -248,8 +247,11 @@ Signal::Signal( int fileNum )
 		return;
 	}
 
-	char* fileName = new char[15];
-	sprintf( fileName, "Raw_data_%02d.txt", fileNum );
+	string fileName = "Raw_data_";
+	if( fileNum < 10 )
+		fileName += "0";
+	fileName += fileNum + ".txt";
+	
 	fstream in;
 	in.open( fileName, ios::in ); // try to open the file
 
