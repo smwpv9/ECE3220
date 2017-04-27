@@ -395,6 +395,7 @@ void Signal::operator+( double off )
 }
 void Signal::operator*( double scale ) throw( wrong)
 {
+	throw "tow";
 	try {
 		if( scale == 0 )
 			throw wrong( "CANNOT scale by zero." );
